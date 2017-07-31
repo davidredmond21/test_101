@@ -3,7 +3,7 @@
 # David Redmond
 # ID 14207377
 #
-#  MLE calcualtion for a Cauchy distribution using 3 numerical optimization algorithms
+#  MLE calcualtion fora Cauchy distribution using 3 numerical optimization algorithms
 #
 #
 library(Rcpp)
@@ -16,42 +16,24 @@ library(rbenchmark)
 # minval & maxval: these are use to find initial estimates or intervals for the algorithms - the return the min/max-value of vector
 # these functions use iterators
 #
-
-ll_r= function(xx,t){ 
-  return( 2* sum(xx-t)/sum(1 + (xx-t)^2))
-}
-
-ll_r2= function(xx,t){ 
-  return( 2* sum( (xx-t)^2-2)/sum((1 + (xx-t)^2)^2))
-}
-# incl contains 4 functions which will be used repeatedly by each algorithm
-# ll_1 : is the 1-st deravitive log-likelihood of the Cauchy PDF taking "xx" input vector, and "t" as rate parameter
-# ll_2 : is the 2-nd deravitive log-likelihood of the Cauchy PDF taking "xx" input vector, and "t" as  rate parameter
-# minval & maxval: these are use to find initial estimates or intervals for the algorithms - the return the min/max-value of vector
-# these functions use iterators
-#
 incl<-'
-  double ll_1(   NumericVector & xx, const double & t)
+  double ll_1( NumericVector  & xx, const double  & t )
   {
   NumericVector::iterator iter;
-  double numer = 0;
-  double denom = 1;
+  double ans = 0.1;
   for ( iter = xx.begin(); iter < xx.end(); iter++) {
-    numer +=( *iter - t );
-    denom +=( 1 + pow( (*iter - t),2));
+    ans += 2 * ( *iter - t ) / (1 + pow(( *iter - t),2) );
     }
-  return ( 2*numer/denom );
+  return ( ans );
   }
-  double ll_2(   NumericVector & xx, const double & t )
+  double ll_2(  NumericVector & xx,const  double & t )
   {
   NumericVector::iterator iter;
-  double numer = 0;
-  double denom = 1;
+  double ans = 0.11;
   for ( iter = xx.begin(); iter < xx.end(); iter++) {
-    numer = pow( ( *iter -t),2)-2 ;
-    denom = pow( (1 + pow( ( *iter - t),2)),2); 
+    ans += 2 * (pow(( *iter - t ),2) - 2) / pow(1 + pow(( *iter - t ),2), 2) ;
     }
-  return ( 2*numer/denom );
+  return ( ans );
   }
   double minval ( NumericVector & xx )
   {
@@ -156,20 +138,30 @@ double a = as<double>(init_a); // create a : initial value
 double b = as<double>(init_b); // create a : initial value
 check_valid_inputs(itr, err); // Check inputs are valie, R checks the numeric vector
 
-// double x[itr] = {0};
-double x_0 = a;
-double x_1 = x_0 + 0.01;
+double x[itr] = {0};
 double root = 0;
-double denom =1.0;
+x[1]  = b;
+x[0]  = a;
+double denom =0.1;
+// Rcout << " before for x[0] " << x[0] << std::endl;
 double converged = 100;  // large iniitial value
-for ( int k = 1; ( (k < itr) && (converged > err) && (denom !=0)) ; k++) {
-     denom = ll_1(xx,x_1)- ll_1(xx,x_0);
+for ( int k = 2; (k < itr || converged > err) ; k++) {
+// Rcout << " 1 before for x[0] " << x[0] << std::endl;
+
+    if (denom != 0)  //divide by zero check
+    {
+     denom = ((ll_1(xx,x[k-1]) )- ll_1(xx,x[k-2]) );
      Rcout << "denom  " << k << " " << denom  << std::endl;
-     root = x_1 -  (x_1 - x_0) * ll_1(xx,x_1) / denom ;
-     x_0 = x_1;
-     x_1 = root;
-     converged = fabs(x_0 - x_1) ;
+
+     x[k] = x[k-1] -  (x[k-1] - x[k-2]) * ll_1(xx,x[k-1]) / denom ;
+    }
+     root = x[k];
+
+     converged = abs(x[k-2] - x[k-1]) ;
+    //Rcout << "converged  " << converged << std::endl;
   }
+ if (converged > 1e+3)  // arbitary large value indicating algorithm is diverging
+   Rcout << "Chose different parameters, algorithm diverging  " << converged << std::endl;
 return(wrap(root));
 '
 #
@@ -206,27 +198,30 @@ double err = as<double>(tol); // create err : error tolerence from tol
 double a = as<double>(init_a); // create a : initial value
 double b = as<double>(init_b); // create a : initial value
 
-check_valid_inputs(itr, err); // Check inputs are value, R checks the numeric vector
+ check_valid_inputs(itr, err); // Check inputs are valie, R checks the numeric vector
 
-double x_0 = a;
+double x[itr] = {0};
+x[1]  =b;
+x[0]  =a;
 double root = 0.124; // dummy variable
-double denom =1.0 ;  // dummy variable
+double denom =0.1 ;  // dummy variable
 double converged = 20;  // initial large value for converged
+for ( int k =3; ( k < itr || converged < err) ; k++) {
+      denom = ll_2(xx,x[k-1]) ;
+      if (denom != 0 && converged < 100)
+      {
+        x[k] = x[k-1] - ll_1(xx,x[k-1])/denom ;
+        Rcout << "iteration & root   " << k << " " << x[k] << std::endl;
+      }
+      else
+        stop("divide by zero or non-convergence error");
 
-for ( int k =1; ( (k < itr) && (converged > err) && (denom !=0 )) ; k++) {
-      denom = ll_2(xx,x_0) ;
-      root = x_0 - ll_1(xx,x_0)/ll_2(xx,x_0) ;
-     // Rcout << "iteration & root   " << ll_1(xx,x_0) << " " << denom << std::endl;
-      converged = fabs(x_0 - root) ;
-      // Rcout << "convergence .... " << converged << std::endl;
-      x_0 = root ; 
+      converged = abs(x[k-1] - x[k]) ;
+     //  Rcout << "convergence .... " << converged << std::endl;
+      root = x[k];
     }
-    if( converged < 1) {
-      Rcout << "convergence OK " << converged << std::endl;
-      return(wrap(root));
-    }
-    else
-      Rcout << "convergence failed-> no root"  << std::endl;
+ Rcout << "converged = " << converged << std::endl;
+return(wrap(root));
 '
 #compile the above C++ function
 NewRapC <- cxxfunction( signature( vec = "numeric",
