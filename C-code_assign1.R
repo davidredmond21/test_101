@@ -152,12 +152,9 @@ body_secantCpp <- '
 NumericVector  xx(vec) ;    //create NumericVector xx from input vec
 int  itr   = as<int>(iter); //create integer for loop iterations iter
 double err = as<double>(tol); // create err : error tolerence from tol
-double a = as<double>(init_a); // create a : initial value
-double b = as<double>(init_b); // create a : initial value
+double x_0 = as<double>(init_a); // create a : initial value
 check_valid_inputs(itr, err); // Check inputs are valie, R checks the numeric vector
 
-// double x[itr] = {0};
-double x_0 = a;
 double x_1 = x_0 + 0.01;
 double root = 0;
 double denom =1.0;
@@ -177,8 +174,8 @@ return(wrap(root));
 secantC <- cxxfunction( signature( vec = "numeric",
                                    iter= "integer",
                                    tol = "numeric",
-                                   init_a = "numeric",
-                                   init_b = "numeric"),
+                                   init_a = "numeric"
+                                  ),
                         body = body_secantCpp,
                         includes = incl,
                         plugin = "Rcpp")
@@ -203,12 +200,10 @@ body_NewRCpp <- '
 NumericVector  xx(vec) ;    //create NumericVector xx from input vec
 int  itr   = as<int>(iter); //create integer for loop iterations iter
 double err = as<double>(tol); // create err : error tolerence from tol
-double a = as<double>(init_a); // create a : initial value
-double b = as<double>(init_b); // create a : initial value
+double x_0 = as<double>(init_a); // create a : initial value
 
 check_valid_inputs(itr, err); // Check inputs are value, R checks the numeric vector
 
-double x_0 = a;
 double root = 0.124; // dummy variable
 double denom =1.0 ;  // dummy variable
 double converged = 20;  // initial large value for converged
@@ -232,8 +227,7 @@ for ( int k =1; ( (k < itr) && (converged > err) && (denom !=0 )) ; k++) {
 NewRapC <- cxxfunction( signature( vec = "numeric",
                             iter= "integer",
                             tol = "numeric",
-                            init_a = "numeric",
-                            init_b = "numeric" ),
+                            init_a = "numeric" ),
                             body = body_NewRCpp,
                             includes = incl,
                             plugin = "Rcpp")
@@ -248,21 +242,21 @@ xx <- c( 12.262307 , 10.281078 , 10.287090 , 12.734039 ,
 ## Parameters for testbench
 itr=20
 tol = 1e-7
-inita = -1.0
+inita = 0.0
 initb = 1.0
 bisectC(xx, itr, tol, inita, initb)
-secantC(xx, itr, tol, inita, initb)
-NewRapC(xx, itr, tol, inita, initb)
+secantC(xx, itr, tol, inita)
+NewRapC(xx, itr, tol, inita)
 yy <- dcauchy(seq(from =-3, to =9, by= 0.001),2, 13)
 library(rbenchmark)
 benchmark(bisectC(vec=yy, itr, tol, inita, initb),
-          secantC(vec=yy, itr, tol,inita, initb),
-          NewRapC(vec=yy, itr, tol,inita, initb),
+          secantC(vec=yy, itr, tol,inita),
+          NewRapC(vec=yy, itr, tol,inita),
           order = "relative")[,1:4]
 
 #
 # supplied vector given below as part of testbench#2
 bisectC(yy, itr, tol, inita, initb)
-secantC(yy, itr, tol, inita, initb)
-NewRapC(yy, itr, tol, inita, initb)
+secantC(yy, itr, tol, inita)
+NewRapC(yy, itr, tol, inita)
 
