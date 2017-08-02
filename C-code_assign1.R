@@ -101,9 +101,6 @@ body_bisectCpp <- '
 // check if 0 sent in and set to max/min in vector
   if (a==0) a = maxval(xx);   // Call maxval from incl
   if (b==0) b = minval(xx);  // Call minval from incl
-
-Rcout << "initial range " << a << " " << b << std::endl;
-
   double f_a ;              // Dummy variable
   double f_b ;              // dummy variable
   bool converged = false;
@@ -111,15 +108,13 @@ Rcout << "initial range " << a << " " << b << std::endl;
     f_a = ll_1(xx, a);
     f_b = ll_1(xx, b);
     c = ( a + b )/2 ;
-    Rcout << "f_a, f_b  " << f_a << " " << f_b << std::endl;
     if ( f_a * ll_1(xx,c ) > 0)
         a = c ;
       else
         b = c ;
     converged = (fabs(a-b) < err) ;
-
   }
- Rcout << "converged = " << converged << std::endl;
+ // Rcout << "converged = " << converged << std::endl;
  return( wrap( c )  );
  '
 #
@@ -132,7 +127,7 @@ bisectC <- cxxfunction( signature( vec = "numeric",
                        body = body_bisectCpp,
                        includes = incl,
                        plugin = "Rcpp")
-# Functional test########
+# Functional block level test########
 # remove comments to apply block tests
 ## Parameters for testbench
 ##itr=2000
@@ -154,20 +149,25 @@ int  itr   = as<int>(iter); //create integer for loop iterations iter
 double err = as<double>(tol); // create err : error tolerence from tol
 double x_0 = as<double>(init_a); // create a : initial value
 check_valid_inputs(itr, err); // Check inputs are valie, R checks the numeric vector
-
 double x_1 = x_0 + 0.01;
 double root = 0;
-double denom =1.0;
+double denom =1.0; 
 double converged = 100;  // large iniitial value
 for ( int k = 1; ( (k < itr) && (converged > err) && (denom !=0)) ; k++) {
      denom = ll_1(xx,x_1)- ll_1(xx,x_0);
-     Rcout << "denom  " << k << " " << denom  << std::endl;
+     // Rcout << "denom  " << k << " " << denom  << std::endl;
      root = x_1 -  (x_1 - x_0) * ll_1(xx,x_1) / denom ;
      x_0 = x_1;
      x_1 = root;
      converged = fabs(x_0 - x_1) ;
-  }
-return(wrap(root));
+    }
+if( fabs(converged) < 1) {
+    // Rcout << "convergence OK " << converged << std::endl;
+    return(wrap(root));
+}    
+else
+    Rcout << "Secant algorithm failed to convergence -> no root"  << std::endl;
+
 '
 #
 #compile the above C++ function
@@ -201,9 +201,7 @@ NumericVector  xx(vec) ;    //create NumericVector xx from input vec
 int  itr   = as<int>(iter); //create integer for loop iterations iter
 double err = as<double>(tol); // create err : error tolerence from tol
 double x_0 = as<double>(init_a); // create a : initial value
-
 check_valid_inputs(itr, err); // Check inputs are value, R checks the numeric vector
-
 double root = 0.124; // dummy variable
 double denom =1.0 ;  // dummy variable
 double converged = 20;  // initial large value for converged
@@ -211,17 +209,14 @@ double converged = 20;  // initial large value for converged
 for ( int k =1; ( (k < itr) && (converged > err) && (denom !=0 )) ; k++) {
       denom = ll_2(xx,x_0) ;
       root = x_0 - ll_1(xx,x_0)/ll_2(xx,x_0) ;
-     // Rcout << "iteration & root   " << ll_1(xx,x_0) << " " << denom << std::endl;
       converged = fabs(x_0 - root) ;
-      // Rcout << "convergence .... " << converged << std::endl;
       x_0 = root ; 
     }
-    if( converged < 1) {
-      Rcout << "convergence OK " << converged << std::endl;
+    if( fabs(converged) < 1) {
       return(wrap(root));
     }
     else
-      Rcout << "convergence failed-> no root"  << std::endl;
+      Rcout << "NewtonRaphson algorithm failed to convergence -> no root"  << std::endl;
 '
 #compile the above C++ function
 NewRapC <- cxxfunction( signature( vec = "numeric",
@@ -240,23 +235,23 @@ xx <- c( 12.262307 , 10.281078 , 10.287090 , 12.734039 ,
          9.018438 , 10.704774 , 9.515617 , 10.003247 ,
          10.278352 , 9.709630 , 10.963905 , 17.314814)
 ## Parameters for testbench
-itr=20
-tol = 1e-7
+itr=200
+tol = 1e-9
 inita = 0.0
-initb = 1.0
+initb = 11.0
 bisectC(xx, itr, tol, inita, initb)
+inita = bisectC(xx, itr, tol, inita, initb)
 secantC(xx, itr, tol, inita)
 NewRapC(xx, itr, tol, inita)
-yy <- dcauchy(seq(from =-3, to =9, by= 0.001),2, 13)
-library(rbenchmark)
-benchmark(bisectC(vec=yy, itr, tol, inita, initb),
-          secantC(vec=yy, itr, tol,inita),
-          NewRapC(vec=yy, itr, tol,inita),
-          order = "relative")[,1:4]
-
 #
-# supplied vector given below as part of testbench#2
-bisectC(yy, itr, tol, inita, initb)
-secantC(yy, itr, tol, inita)
-NewRapC(yy, itr, tol, inita)
+benchmark(bisectC(xx, itr, tol, inita, initb),
+          secantC(xx, itr, tol,inita),
+          NewRapC(xx, itr, tol,inita),
+          order = "relative")[,1:4]
+# another vector type Cauchy
+## using a combination of Bisecnt and Newton
 
+yy <- dcauchy(seq(from =-3, to =3, by= 0.001),6, 1)
+approx= bisectC(yy, 4, 1e-5, 0, +1)
+secantC(yy, 300, 1e-9, approx)
+NewRapC(yy, 300, 1e-9, approx)
