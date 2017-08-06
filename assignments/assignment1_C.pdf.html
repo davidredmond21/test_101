@@ -1,0 +1,215 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title></title>
+	<meta name="generator" content="LibreOffice 5.1.6.2 (Linux)"/>
+	<meta name="created" content="2017-07-25T22:12:36.191142377"/>
+	<meta name="changed" content="2017-07-27T21:36:06.056328677"/>
+	<style type="text/css">
+		@page { margin: 2cm }
+		p { margin-bottom: 0.25cm; line-height: 120% }
+		pre.cjk { font-family: "Courier New", monospace }
+		a:link { so-language: zxx }
+	</style>
+</head>
+<body lang="en-IE" dir="ltr">
+<pre class="western" style="border: none; padding: 0cm"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">David Redmond</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">ID -14207377	Assignment c-programming </font></font>
+
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">The code implement 3 numerical root finding algorithms </font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Bisection method</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Newton’s method</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Secant method</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">These methods operate as foloows:  (extracts from Wikepidia)</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">the Bisection method is a simple root-finding algorithm for function </font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><i>f</i></font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"> be a <a href="https://en.wikipedia.org/wiki/Continuous_function">continuous function</a>, for which one knows an interval [</font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><i>a</i></font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">, </font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><i>b</i></font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">] such that </font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><i>f</i></font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">(</font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><i>a</i></font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">) and </font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><i>f</i></font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">(</font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><i>b</i></font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">) have opposite signs (a bracket). This is implemented simply by (f(a) * f(b) &lt; 0 </font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">) </font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">and one has divided by two the size of the interval. </font></font></pre><p style="margin-bottom: 0cm; border: none; padding: 0cm">
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Each
+iteration performs these steps:</font></font></p>
+<ol>
+	<li/>
+<p style="margin-bottom: 0cm; border: none; padding: 0cm"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">	Calculate
+	<i>c</i>, the midpoint of the interval, <i>c</i> = <i>a</i> + <i>b</i>/<span style="display: inline-block; border-top: 1px solid #000000; border-bottom: none; border-left: none; border-right: none; padding-top: 0.05cm; padding-bottom: 0cm; padding-left: 0cm; padding-right: 0cm">2</span>.
+	</font></font>
+	</p>
+	<li/>
+<p style="margin-bottom: 0cm"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Calculate
+	the function value at the midpoint, <i>f</i>(<i>c</i>). </font></font>
+	</p>
+	<li/>
+<p style="margin-bottom: 0cm"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">If
+	convergence is satisfactory (that is, <i>a</i> - <i>c</i> is
+	sufficiently small, or <i>f</i>(<i>c</i>) is sufficiently small),
+	return <i>c</i> and stop iterating. </font></font>
+	</p>
+	<li/>
+<p><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Examine
+	the sign of <i>f</i>(<i>c</i>) and replace either (<i>a</i>, <i>f</i>(<i>a</i>))
+	or (<i>b</i>, <i>f</i>(<i>b</i>)) with (<i>c</i>, <i>f</i>(<i>c</i>))
+	so that there is a zero crossing within the new interval. </font></font>
+	</p>
+</ol>
+<pre class="western" style="border: none; padding: 0cm">
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><a href="https://en.wikipedia.org/wiki/Newton%27s_method">Newton's method</a> assumes the function </font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><i>f</i></font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"> to have a continuous <a href="https://en.wikipedia.org/wiki/Derivative">derivative</a>. Newton's method may not converge if started too far away from a root. However, when it does converge, it is faster than the bisection method, and is usually quadratic. Newton's method is also important because it readily generalizes to higher-dimensional problems.</font></font>
+  <font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">x(n+1) = x(n) - f'(x(n))/ f&quot;(x(n))</font></font>
+
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Secant method, r</font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">eplacing the derivative in Newton's method with a <a href="https://en.wikipedia.org/wiki/Finite_difference">finite difference</a>, we get the <a href="https://en.wikipedia.org/wiki/Secant_method">secant method</a>. </font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">x[n] = x[n-1] - f(x[n-1]) * (x[n-1] - x[n-2])/(f(x[n-1] - f(x[n-2]));</font></font>
+
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><b>Code structure :</b></font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Each algorithm is coded as per recurssion formula , and each functions will have a specific exit to the iteration based on the supplied tolerance value, or maximum number of iterations allowed, or if the exit condition is satisifed </font></font>
+
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">the library incl, contains 4 functions : 1<sup>st</sup> and 2<sup>nd</sup> derivatives log-likelihood for Cauchy PDF, and a min and max value function which is used for the initial guess in the algorithms</font></font>
+
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">The exception handler looks for </font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">	is the vector xx a numeric vector</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">	is the number of iterations &gt;0</font></font>
+
+
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><b>Benchmarking</b> </font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Evaluating the performance using the testcase given </font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">the 3 algorithms all converge to similar values</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">running  a bernchmark shows marginal differences in the speed</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">the results are all similar and in agreement</font></font>
+
+<a name="rstudio_console_output2"></a><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><font color="#c800a4">&gt; itr=2000</font></font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><font color="#c800a4">&gt; tol = 1e-9</font></font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><font color="#c800a4">&gt; bisectC(xx, itr,tol)</font></font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">[1] 13.08841</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><font color="#c800a4">&gt; secantC(xx, itr,tol)</font></font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">[1] 14.86255</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><font color="#c800a4">&gt; NewRapC(xx, itr,tol)</font></font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">[1] 14.87316</font></font>
+<a name="rstudio_console_output"></a>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">&gt; benchmark( bisectC(xx, itr,tol), secantC(xx, itr,tol) ,NewRapC(xx, itr,tol), order = &quot;relative&quot;)[,1:4]</font></font>
+                   <font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">test replications elapsed relative</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">2 secantC(xx, itr, tol)          100   0.001        1</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">3 NewRapC(xx, itr, tol)          100   0.001        1</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">1 bisectC(xx, itr, tol)          100   0.002        2</font></font>
+
+
+
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><b>Sensitivity of starting points :</b></font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">To evaluate how the functions performed using different start points i’ve modified the code for min/max val </font></font>
+ <font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><span style="background: #ffff00">maxval = *iter/2;</span></font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">the results show secantC does not converge to the same root as the other methods, and in fact there is little agreement.</font></font>
+<a name="rstudio_console_output4"></a>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">&gt; bisectC(xx, itr,tol)</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">[1] 8.861998</font></font>
+
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">&gt; secantC(xx, itr,tol)</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><span style="background: #ffff00">[1] 16.79402</span></font></font>
+
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">&gt; NewRapC(xx, itr,tol)</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">[1] 5.380514</font></font></pre><p>
+<br/>
+<br/>
+
+</p>
+<p><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Further
+change show to starting points such as</font></font></p>
+<p> <span style="background: #ffff00"> <font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">minval
+= abs(*iter);</span></font></font></p>
+<pre class="western"><a name="rstudio_console_output5"></a>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">&gt; bisectC(xx, itr,tol)</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">[1] 12.65741</font></font>
+
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">&gt; secantC(xx, itr,tol)</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">[1] 14.5043</font></font>
+
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">&gt; NewRapC(xx, itr,tol)</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">[1] 14.87316</font></font></pre><p>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><br/>
+shows
+agreement between Secant and NewtonRaphson </font></font>
+</p>
+<p><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Finally
+if the initial conditions are the same point the Secant method fails
+completely. Conclusion is the starting points have a significant
+impact on the agreement </font></font>
+</p>
+<p><br/>
+<br/>
+
+</p>
+<p><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><b>Advantages
+and limitations.</b></font></font></p>
+<p><font face="Monospace"><font size="2" style="font-size: 10pt"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">BisectC
+: The method is guaranteed to converge to a root of </font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><i>f</i></font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">
+if </font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><i>f</i></font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">
+is a <a href="https://en.wikipedia.org/wiki/Continuous_function">continuous
+function</a> on the interval [</font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><i>a</i></font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">,
+</font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><i>b</i></font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">]
+and </font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><i>f</i></font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">(</font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><i>a</i></font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">)
+and </font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><i>f</i></font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">(</font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><i>b</i></font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">)
+have opposite signs. The <a href="https://en.wikipedia.org/wiki/Approximation_error">absolute
+error</a> is halved at each step so the method <a href="https://en.wikipedia.org/wiki/Rate_of_convergence">converges
+linearly</a>, which is comparatively slow.</font></font></font></font></p>
+<p><br/>
+<br/>
+
+</p>
+<p><font face="Monospace"><font size="2" style="font-size: 10pt"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Newton's
+method is an extremely powerful technique—in general the
+<a href="https://en.wikipedia.org/wiki/Rate_of_convergence">convergence</a>
+is quadratic, however its performance is slower because it requires
+the extra derivative be calculated directly. An analytical expression
+for the derivative may not be easily obtainable and could be
+expensive to evaluate. In these situations, it may be appropriate to
+approximate the derivative by using the slope of a line through two
+nearby points on the function. </font></font></font></font>
+</p>
+<p><font face="Monospace"><font size="2" style="font-size: 10pt"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Using
+this approximation would result in something like the <a href="https://en.wikipedia.org/wiki/Secant_method">secant
+method</a> whose convergence is slower than that of Newton's method.
+A large error in the initial estimate can contribute to
+non-convergence of the algorithm. </font></font></font></font>
+</p>
+<p><font face="Monospace"><font size="2" style="font-size: 10pt"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">The
+</font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">S</font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">ecant
+method does not require that the root remain bracketed like the
+<a href="https://en.wikipedia.org/wiki/Bisection_method">bisection
+method</a> does, and hence it does not always converge. </font></font><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">In
+the benchmakring exercise the Newton is 1.5 X slower then the Bisect
+or Secant. Examining the sensitivity of starting values the Secant
+appears most volital, and unless due care is given to the starting
+point Secant is a risky choice</font></font></font></font></p>
+<p><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Bisect
+appear robust, however it s speed of convergence is linear , but the
+simplicity of the algorithm makefor a fast algorithm, and more
+suitable for comples loglikelihood expressions and where the
+derivatives are more complex, and in particular for a general Cauchy
+where the scale parameter may not be = 1.</font></font></p>
+<p><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Re-running
+the algorithms using a different vector yy shows Bisect performing
+best, Secant failing to converge, this could be due to narrow range
+of valued selected [0..1].</font></font></p>
+<pre class="western"><a name="rstudio_console_output6"></a><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><font color="#c800a4">&gt; yy &lt;- dcauchy(runif(1:1000),0.5, 1)</font></font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><font color="#c800a4">&gt; ## Parameters for testbench</font></font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><font color="#c800a4">&gt; itr=2000</font></font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><font color="#c800a4">&gt; tol = 1e-7</font></font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><font color="#c800a4">&gt; bisectC(yy, itr,tol)</font></font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">[1] 0.3024077</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><font color="#c800a4">&gt; secantC(yy, itr,tol)</font></font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">NULL</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><font color="#c800a4">&gt; NewRapC(yy, itr,tol)</font></font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">[1] 0</font></font>
+
+<a name="rstudio_console_output7"></a><font color="#c800a4"> <font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">benchmark( bisectC(xx, itr,tol), secantC(xx, itr,tol) ,NewRapC(xx, itr,tol), order = &quot;relative&quot;)[,1:4]</font></font></font>
+                   <font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">test replications elapsed relative</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">3 NewRapC(xx, itr, tol)          100   0.002      1.0</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">1 bisectC(xx, itr, tol)          100   0.032     16.0</font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">2 secantC(xx, itr, tol)          100   2.993   1496.5</font></font>
+</pre><p>
+<br/>
+<br/>
+
+</p>
+<p><br/>
+<br/>
+
+</p>
+<p><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">For
+this problem the Bisect provides more accurate results using min/max
+values as the starting points for the algorithm</font></font></p>
+</body>
+</html>
